@@ -48,6 +48,19 @@ def ts(t, srt=False):
     if srt: return f"{int(h):02d}:{int(m):02d}:{int(s):02d},{int((s % 1) * 1000):03d}"
     return f"{int(h)}:{int(m):02d}:{int(s):02d}" if h else f"{int(m)}:{int(s):02d}"
 
+def add_cuda_dlls():
+    """On Windows, make pip-installed NVIDIA libs (nvidia-cublas-cu12, nvidia-cudnn-cu12) loadable."""
+    if os.name != "nt":
+        return
+    try:
+        import nvidia
+    except ImportError:
+        return
+    for root in nvidia.__path__:
+        for b in glob.glob(os.path.join(root, "*", "bin")):
+            os.add_dll_directory(b)
+            os.environ["PATH"] = b + os.pathsep + os.environ.get("PATH", "")
+
 def cmd_transcribe(a):
     need("ffmpeg")
     try:
@@ -59,6 +72,8 @@ def cmd_transcribe(a):
         wav = to_wav(fetch(a.src, tmp, "ba/b"), tmp)
         t1 = time.perf_counter()
         device = a.device
+        if device == "cuda":
+            add_cuda_dlls()
         compute = "float16" if device == "cuda" else "int8"
         model = WhisperModel(a.model, device=device, compute_type=compute)
         t2 = time.perf_counter()

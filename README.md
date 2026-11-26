@@ -7,16 +7,16 @@ Give your agent (Claude Code, Codex, Cursor, Gemini CLI, OpenClaw, or any agent 
 - a **timestamped transcript** from [faster-whisper](https://github.com/SYSTRAN/faster-whisper), running on your own machine
 - **timestamped frames and a contact sheet**, so it can read on-screen text, tool names and UI the speaker points at
 
-### ⚡ Up to 18× real time on a plain CPU
-**An hour-long podcast transcribes in about 3½ minutes.** No GPU needed.
+### ⚡ 43× real time on a GPU, 18× on a plain CPU
+**An hour-long podcast transcribes in about 90 seconds on a gaming GPU, or about 3½ minutes on CPU only.**
 
-| Model | 18-min speech took | Speed |
+| Model | CPU (Ryzen 5 4600G) | GPU (GTX 1660 Super) |
 |---|---|---|
-| `tiny.en` | **58 s** | **18.3× real time** |
-| `base.en` (default) | 1 min 46 s | 10.1× real time |
-| `small.en` | 5 min 11 s | 3.4× real time |
+| `tiny.en` | 18.3× real time (58 s) | **43.0× real time (25 s)** |
+| `base.en` (default) | 10.1× (1 min 46 s) | **28.4× (38 s)** |
+| `small.en` | 3.4× (5 min 11 s) | 10.5× (1 min 42 s) |
 
-<sub>Benchmark: JFK's full "We choose to go to the Moon" speech (17.8 min), AMD Ryzen 5 4600G, CPU only, int8. ×real time = audio length ÷ transcription time. Every run prints its own speed, so you can benchmark your machine.</sub>
+<sub>Benchmark: JFK's full "We choose to go to the Moon" speech (17.8 min). CPU = int8, GPU = float16. ×real time = audio length ÷ transcription time (download and model load not counted). Every run prints its own speed, so you can benchmark your machine.</sub>
 
 ```
 $ python scripts/vt.py transcribe "https://www.youtube.com/watch?v=jNQXAC9IVRw"
@@ -53,6 +53,9 @@ git clone https://github.com/AggrMod/open-video-transcriber
 cd open-video-transcriber
 pip install -r requirements.txt     # faster-whisper, yt-dlp, pillow
 # plus ffmpeg on PATH
+
+# optional, NVIDIA GPU (2-4x faster):
+pip install nvidia-cublas-cu12 nvidia-cudnn-cu12   # then add --device cuda
 ```
 
 The first run downloads the Whisper model (~150 MB for `base.en`) and caches it.

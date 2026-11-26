@@ -35,13 +35,14 @@ Every `transcribe` prints a line to stderr like
 
 ## Options
 - `--model`: `tiny.en` (fastest), `base.en` (default, a good balance), `small.en` / `medium.en` (more accurate, need more RAM), `large-v3` / `turbo` (best, multilingual). Use a non-`.en` model for non-English videos.
-- `--device cuda` if there's an NVIDIA GPU.
+- `--device cuda` if there's an NVIDIA GPU: 2–4× faster (needs `pip install nvidia-cublas-cu12 nvidia-cudnn-cu12`; the script finds those DLLs by itself on Windows).
 - `--vad` skips silence. It's faster on long videos but can drop speech under loud music.
 - `frames --every N` (seconds between frames, default 2), `--max N` (default 14).
 
 ## Gotchas
 | Symptom | Fix |
 |---|---|
+| `cublas64_12.dll is not found` | `pip install nvidia-cublas-cu12 nvidia-cudnn-cu12`, or drop `--device cuda` |
 | `no speech detected` | Music or text-only video: use `frames --sheet` |
 | `mkl_malloc: failed to allocate memory` | Not enough RAM for that model: use `base.en` or `tiny.en` |
 | Proper nouns misspelled (brand names, URLs) | Check them against `frames`, since Whisper guesses names it doesn't know |
