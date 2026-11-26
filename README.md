@@ -7,10 +7,19 @@ Give your agent (Claude Code, Codex, Cursor, Gemini CLI, OpenClaw, or any agent 
 - a **timestamped transcript** from [faster-whisper](https://github.com/SYSTRAN/faster-whisper), running on your own machine
 - **timestamped frames and a contact sheet**, so it can read on-screen text, tool names and UI the speaker points at
 
-A 30-second reel transcribes in about **10 seconds on a plain CPU**.
+### ⚡ Up to 18× real time on a plain CPU
+**An hour-long podcast transcribes in about 3½ minutes.** No GPU needed.
+
+| Model | 18-min speech took | Speed |
+|---|---|---|
+| `tiny.en` | **58 s** | **18.3× real time** |
+| `base.en` (default) | 1 min 46 s | 10.1× real time |
+
+<sub>Benchmark: JFK's full "We choose to go to the Moon" speech (17.8 min), AMD Ryzen 5 4600G, CPU only, int8. ×real time = audio length ÷ transcription time. Every run prints its own speed, so you can benchmark your machine.</sub>
 
 ```
 $ python scripts/vt.py transcribe "https://www.youtube.com/watch?v=jNQXAC9IVRw"
+speed: 19.0s of audio transcribed in 2.1s = 9.1x real time (base.en, cpu; download 4.4s, model load 2.0s)
 [0:00] Alright, so here we are, one of the elephants, cool thing about these guys is that they have
 [0:08] really, really, really long fums, and that's cool, and that's pretty much all there is to say.
 ```

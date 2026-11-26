@@ -28,6 +28,11 @@ python scripts/vt.py <command> ...
 3. For a specific moment, narrow it: `frames URL --out DIR --start 40 --end 55 --every 1`.
 4. Quote with timestamps from the transcript. Keep quotes short.
 
+## Speed
+Every `transcribe` prints a line to stderr like
+`speed: 124.9s of audio transcribed in 19.2s = 6.5x real time (base.en, cpu; download 3.6s, model load 1.5s)`.
+**×real time = audio length ÷ transcription time** (higher is faster; download and model load are shown separately). With `--format json` it's also in the `speed` field. Report it when the user asks how fast it was, or when picking a model.
+
 ## Options
 - `--model`: `tiny.en` (fastest), `base.en` (default, a good balance), `small.en` / `medium.en` (more accurate, need more RAM), `large-v3` / `turbo` (best, multilingual). Use a non-`.en` model for non-English videos.
 - `--device cuda` if there's an NVIDIA GPU.

@@ -8,7 +8,7 @@
 Audio and video are downloaded to a temp folder and deleted afterwards.
 Works with anything yt-dlp supports: YouTube, TikTok, Instagram, Facebook reels, X, Vimeo, ...
 """
-import argparse, json, os, shutil, subprocess, sys, tempfile, glob
+import argparse, json, os, shutil, subprocess, sys, tempfile, glob, time
 
 def die(msg):
     print(f"error: {msg}", file=sys.stderr); sys.exit(1)
@@ -55,14 +55,25 @@ def cmd_transcribe(a):
     except ImportError:
         die("pip install faster-whisper")
     with tempfile.TemporaryDirectory() as tmp:
+        t0 = time.perf_counter()
         wav = to_wav(fetch(a.src, tmp, "ba/b"), tmp)
+        t1 = time.perf_counter()
         device = a.device
         compute = "float16" if device == "cuda" else "int8"
         model = WhisperModel(a.model, device=device, compute_type=compute)
+        t2 = time.perf_counter()
         segs, info = model.transcribe(wav, vad_filter=a.vad, beam_size=5)
         segs = [{"start": round(s.start, 2), "end": round(s.end, 2), "text": s.text.strip()} for s in segs]
+        t3 = time.perf_counter()
+    # speed = audio length / time spent transcribing ("x real time"; higher is faster)
+    dur, tx = info.duration, t3 - t2
+    speed = {"audio_s": round(dur, 2), "download_s": round(t1 - t0, 2), "model_load_s": round(t2 - t1, 2),
+             "transcribe_s": round(tx, 2), "x_realtime": round(dur / tx, 1) if tx else None,
+             "model": a.model, "device": device}
+    print(f"speed: {dur:.1f}s of audio transcribed in {tx:.1f}s = {speed['x_realtime']}x real time "
+          f"({a.model}, {device}; download {t1 - t0:.1f}s, model load {t2 - t1:.1f}s)", file=sys.stderr)
     if a.format == "json":
-        out = json.dumps({"language": info.language, "duration": round(info.duration, 2), "segments": segs}, indent=1)
+        out = json.dumps({"language": info.language, "duration": round(info.duration, 2), "speed": speed, "segments": segs}, indent=1)
     elif a.format == "srt":
         out = "\n".join(f"{i}\n{ts(s['start'], True)} --> {ts(s['end'], True)}\n{s['text']}\n" for i, s in enumerate(segs, 1))
     else:
