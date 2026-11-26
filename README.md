@@ -14,6 +14,7 @@ Give your agent (Claude Code, Codex, Cursor, Gemini CLI, OpenClaw, or any agent 
 |---|---|---|
 | `tiny.en` | **58 s** | **18.3× real time** |
 | `base.en` (default) | 1 min 46 s | 10.1× real time |
+| `small.en` | 5 min 11 s | 3.4× real time |
 
 <sub>Benchmark: JFK's full "We choose to go to the Moon" speech (17.8 min), AMD Ryzen 5 4600G, CPU only, int8. ×real time = audio length ÷ transcription time. Every run prints its own speed, so you can benchmark your machine.</sub>
 
